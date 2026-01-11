@@ -1,0 +1,51 @@
+{
+  "tables": [
+    {
+      "name": "products",
+      "columns": [
+        {
+          "name": "id",
+          "type": "number",
+          "isPrimaryKey": true,
+          "isUnique": false,
+          "isNullable": false
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "isPrimaryKey": false,
+          "isUnique": false,
+          "isNullable": false
+        },
+        {
+          "name": "price",
+          "type": "number",
+          "isPrimaryKey": false,
+          "isUnique": false,
+          "isNullable": false
+        },
+        {
+          "name": "stock",
+          "type": "number",
+          "isPrimaryKey": false,
+          "isUnique": false,
+          "isNullable": false
+        }
+      ],
+      "rows": [
+        {
+          "id": 1,
+          "name": "Laptop",
+          "price": 1200,
+          "stock": 10
+        },
+        {
+          "id": 2,
+          "name": "Mouse",
+          "price": 20,
+          "stock": 50
+        }
+      ]
+    }
+  ]
+}

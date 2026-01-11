@@ -1,0 +1,146 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PesaTrack | Merchant Portal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="logo-icon">P</div>
+                <h2>PesaTrack</h2>
+            </div>
+            
+            <nav>
+                <a href="#" class="active"><i data-lucide="layout-dashboard"></i> Dashboard</a>
+                <a href="#"><i data-lucide="receipt"></i> Transactions</a>
+                <a href="#"><i data-lucide="wallet"></i> Payouts</a>
+                <a href="#"><i data-lucide="settings"></i> Settings</a>
+            </nav>
+
+            <div class="user-profile">
+                <div class="avatar">JM</div>
+                <div class="info">
+                    <p class="name">John Mwangi</p>
+                    <p class="role">Merchant ID: 4920</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header>
+                <h1>Dashboard</h1>
+                <div class="actions">
+                     <button class="btn-refresh" id="refreshBtn"><i data-lucide="refresh-cw"></i> Sync</button>
+                     <button class="btn-primary" id="addTxBtn"><i data-lucide="plus"></i> New Transaction</button>
+                </div>
+            </header>
+
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="card stat-card">
+                    <div class="stat-icon income"><i data-lucide="trending-up"></i></div>
+                    <div class="stat-info">
+                        <h3>Total Sales</h3>
+                        <p class="value" id="totalSales">KES 0.00</p>
+                    </div>
+                </div>
+                <div class="card stat-card">
+                    <div class="stat-icon tx"><i data-lucide="activity"></i></div>
+                    <div class="stat-info">
+                        <h3>Transactions</h3>
+                        <p class="value" id="txCount">0</p>
+                    </div>
+                </div>
+                <div class="card stat-card">
+                    <div class="stat-icon credit"><i data-lucide="credit-card"></i></div>
+                    <div class="stat-info">
+                        <h3>Avg. Ticket</h3>
+                        <p class="value" id="avgTicket">KES 0.00</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transactions Table -->
+            <div class="card table-card">
+                <div class="card-header">
+                    <h3>Recent Transactions</h3>
+                    <div class="filter">
+                        <span class="active">All</span>
+                        <span>Success</span>
+                        <span>Pending</span>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table id="txTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Merchant/Ref</th>
+                                <th>Date</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Populated by JS -->
+                            <tr>
+                                <td colspan="6" class="empty-state">Loading records...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="txModal" style="display: none;">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>New Transaction</h3>
+                <button class="close-btn" id="closeModal"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="txForm">
+                    <div class="form-group">
+                        <label>Merchant Name</label>
+                        <input type="text" id="mName" value="Kileleshwa Branch" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Amount (KES)</label>
+                        <input type="number" id="mAmount" placeholder="e.g. 1500" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select id="mStatus">
+                            <option value="Success">Success</option>
+                            <option value="Pending">Pending</option>
+                            <option value="Failed">Failed</option>
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn-primary">Record Transaction</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="interaction.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>
