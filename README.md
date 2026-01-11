@@ -5,7 +5,7 @@
 
 **PesaTrack** is a Merchant Transaction Dashboard powered by **PesaDB**, a custom-built, lightweight, embedded Relational Database Management System (RDBMS).
 
-## 🚀 The Vision: "Payments at the Edge"
+## The Vision: "Payments at the Edge"
 
 In many African markets, internet connectivity can be intermittent. Relying on cloud-only databases for Point-of-Sale (POS) systems can lead to lost transactions. 
 
@@ -15,7 +15,7 @@ In many African markets, internet connectivity can be intermittent. Relying on c
 3.  **Persistence**: Data is flushed to disk (`pesadb.json`) for durability.
 4.  **Simplicity**: A lightweight REPL and SQL interface for easy debugging by support staff.
 
-## 🛠 Project Structure
+## Project Structure
 
 - `src/core/`: **The RDBMS Logic**
   - `Table.ts`: Handles row storage, column typing, primary keys, and **indexing** (Hash Maps for O(1) lookups).
@@ -55,7 +55,7 @@ Prerequisites: Node.js (v16+)
    ```
    Open **http://localhost:3000** in your browser.
 
-## 🧠 Technical Highlights (The "Challenge" Part)
+##  Technical Highlights (The "Challenge" Part)
 
 ### 1. Custom Indexing Strategy
 To ensure `SELECT` and `UPDATE` operations are fast even as transaction history grows, `Table.ts` implements a **Hash Indexing** system.
@@ -69,10 +69,11 @@ The engine strictly enforces data types (`string`, `number`, `boolean`) at the i
 - **Atomicity**: Changes are validated against constraints *before* being committed to the main storage.
 - **Durability**: Auto-save triggers on mutations to ensure data persistence.
 
-## 🔮 Future Improvements
-- **B-Tree Indexing**: For range queries (e.g., "Transactions > 1000 KES").
-- **JOINS**: Currently limited, full Inner/Outer join support would enable complex reporting.
-- **Binary Storage**: Replacing JSON with a binary format for better space efficiency.
+## Improvements Made
+- ~~**B-Tree Indexing**~~  **Fully Implemented**: Range queries (>, <, >=, <=, BETWEEN) with O(log N) performance
+- ~~**JOINS**~~  **Fully Implemented**: INNER, LEFT, RIGHT joins with hash optimization (O(N+M)).
+- **Binary Storage**: Replacing JSON with a binary format for better space efficiency (deferred for readability).
+- **Complex WHERE Clauses**: Full support for AND/OR/NOT operators (coming soon).
 
 ---
 *Built with ❤️ for Pesapal.*

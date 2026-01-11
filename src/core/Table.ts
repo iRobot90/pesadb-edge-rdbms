@@ -1,4 +1,6 @@
 
+import { BTreeIndex } from './BTreeIndex';
+
 export type DataType = 'string' | 'number' | 'boolean';
 
 export interface Column {
@@ -15,7 +17,8 @@ export class Table {
     name: string;
     columns: Column[];
     rows: Row[]; // Using an array for storage (simple)
-    indices: Map<string, Map<any, Row[]>>; // column_name -> (value -> rows[])
+    indices: Map<string, Map<any, Row[]>>; // Hash indices: column_name -> (value -> rows[])
+    btreeIndices: Map<string, BTreeIndex>; // B-Tree indices for range queries
     primaryKeyCol?: string;
 
     constructor(name: string, columns: Column[]) {
@@ -23,6 +26,7 @@ export class Table {
         this.columns = columns;
         this.rows = [];
         this.indices = new Map();
+        this.btreeIndices = new Map();
 
         // Validate columns and setup indices/PK
         for (const col of columns) {
@@ -32,9 +36,13 @@ export class Table {
                 }
                 this.primaryKeyCol = col.name;
             }
-            // Create index if PK or Unique
+            // Create hash index if PK or Unique
             if (col.isPrimaryKey || col.isUnique) {
                 this.createIndex(col.name);
+            }
+            // Auto-create B-Tree index for numeric columns (for range queries)
+            if (col.type === 'number') {
+                this.createBTreeIndex(col.name);
             }
         }
     }
@@ -45,6 +53,20 @@ export class Table {
             // Rebuild index if rows exist
             for (const row of this.rows) {
                 this.addToIndex(colName, row);
+            }
+        }
+    }
+
+    createBTreeIndex(colName: string) {
+        if (!this.btreeIndices.has(colName)) {
+            const btree = new BTreeIndex(colName);
+            this.btreeIndices.set(colName, btree);
+            // Rebuild index if rows exist
+            for (const row of this.rows) {
+                const value = row[colName];
+                if (value !== null && value !== undefined) {
+                    btree.insert(value, row);
+                }
             }
         }
     }
@@ -114,7 +136,7 @@ export class Table {
         // Add to storage
         this.rows.push(row);
 
-        // Update indices
+        // Update hash indices
         for (const [colName] of this.indices) {
             try {
                 this.addToIndex(colName, row);
@@ -124,6 +146,14 @@ export class Table {
                 this.rows.pop();
                 // TODO: partial rollback of other indices if multiple
                 throw e;
+            }
+        }
+
+        // Update B-Tree indices
+        for (const [colName, btree] of this.btreeIndices) {
+            const value = row[colName];
+            if (value !== null && value !== undefined) {
+                btree.insert(value, row);
             }
         }
     }
@@ -197,9 +227,17 @@ export class Table {
         const affected = rowsToDelete.length;
 
         for (const row of rowsToDelete) {
-            // Remove from indices
+            // Remove from hash indices
             for (const [colName] of this.indices) {
                 this.removeFromIndex(colName, row);
+            }
+
+            // Remove from B-Tree indices
+            for (const [colName, btree] of this.btreeIndices) {
+                const value = row[colName];
+                if (value !== null && value !== undefined) {
+                    btree.delete(value, row);
+                }
             }
 
             // Remove from storage (slow, O(N) splice)
@@ -209,5 +247,55 @@ export class Table {
             }
         }
         return affected;
+    }
+
+    /**
+     * Range query methods using B-Tree indices for O(log N) performance
+     */
+
+    // Find rows where column > value
+    selectGreaterThan(column: string, value: any): Row[] {
+        const btree = this.btreeIndices.get(column);
+        if (!btree) {
+            // Fall back to table scan if no B-Tree index
+            return this.rows.filter(row => row[column] > value);
+        }
+        return btree.greaterThan(value);
+    }
+
+    // Find rows where column >= value
+    selectGreaterThanOrEqual(column: string, value: any): Row[] {
+        const btree = this.btreeIndices.get(column);
+        if (!btree) {
+            return this.rows.filter(row => row[column] >= value);
+        }
+        return btree.greaterThanOrEqual(value);
+    }
+
+    // Find rows where column < value
+    selectLessThan(column: string, value: any): Row[] {
+        const btree = this.btreeIndices.get(column);
+        if (!btree) {
+            return this.rows.filter(row => row[column] < value);
+        }
+        return btree.lessThan(value);
+    }
+
+    // Find rows where column <= value
+    selectLessThanOrEqual(column: string, value: any): Row[] {
+        const btree = this.btreeIndices.get(column);
+        if (!btree) {
+            return this.rows.filter(row => row[column] <= value);
+        }
+        return btree.lessThanOrEqual(value);
+    }
+
+    // Find rows where column is between min and max (inclusive)
+    selectBetween(column: string, minValue: any, maxValue: any): Row[] {
+        const btree = this.btreeIndices.get(column);
+        if (!btree) {
+            return this.rows.filter(row => row[column] >= minValue && row[column] <= maxValue);
+        }
+        return btree.range(minValue, maxValue);
     }
 }

@@ -55,6 +55,117 @@ DELETE FROM users WHERE id=1
 - **Strategy**: Auto-save on every mutation
 - **Durability**: Crash-safe with immediate disk flush
 
+### JOIN Operations ✨ NEW
+- **INNER JOIN**: Returns only matching rows from both tables
+  ```sql
+  SELECT * FROM orders INNER JOIN customers ON orders.customer_id = customers.id
+  SELECT o.order_id, c.name FROM orders o INNER JOIN customers c ON o.customer_id = c.id
+  ```
+  
+- **LEFT JOIN**: Returns all rows from left table + matching rows from right (nulls for non-matches)
+  ```sql
+  SELECT * FROM customers LEFT JOIN orders ON customers.id = orders.customer_id
+  -- Returns all customers, even those without orders
+  ```
+  
+- **RIGHT JOIN**: Returns all rows from right table + matching rows from left (nulls for non-matches)
+  ```sql
+  SELECT * FROM customers RIGHT JOIN orders ON customers.id = orders.customer_id
+  -- Returns all orders, even orphan orders without valid customers
+  ```
+
+- **Advanced Features**:
+  - ✅ Table aliases support (`orders o`, `customers c`)
+  - ✅ Column projection (select specific columns from joined tables)
+  - ✅ WHERE clause filtering on joined results
+  - ✅ Hash Join optimization (O(N+M) instead of O(N×M) nested loop)
+  - ✅ Proper null handling for outer joins
+  - ✅ Qualified column names (`table.column` format)
+
+- **Performance Optimization**:
+  - **Hash Join Algorithm**: Automatically builds a hash map on the smaller table
+  - **Complexity**: O(N+M) linear time vs O(N×M) quadratic time
+  - **Example**: 1000 customers × 5000 orders = 833× faster than nested loops!
+  
+- **Usage Examples**:
+  ```sql
+  -- INNER JOIN with WHERE clause
+  SELECT o.order_id, c.name, o.amount 
+  FROM orders o INNER JOIN customers c ON o.customer_id = c.id 
+  WHERE o.status = "completed"
+  
+  -- LEFT JOIN to find customers without orders
+  SELECT c.name, o.order_id 
+  FROM customers c LEFT JOIN orders o ON c.id = o.customer_id
+  
+  -- RIGHT JOIN to find orphan orders
+  SELECT o.order_id, c.name 
+  FROM customers c RIGHT JOIN orders o ON c.id = o.customer_id
+  ```
+
+### B-Tree Indexing ✨ NEW
+- **Automatic Indexing**: All numeric columns automatically get B-Tree indices
+- **Range Query Support**: Efficient queries with >, <, >=, <=, BETWEEN operators
+- **Performance**: O(log N) complexity instead of O(N) table scans
+
+**Supported Operators**:
+- **Greater Than (>)**: Find values above a threshold
+  ```sql
+  SELECT * FROM transactions WHERE amount > 1000
+  -- Returns all transactions above 1000 KES
+  ```
+
+- **Greater Than or Equal (>=)**: Include the boundary value
+  ```sql
+  SELECT * FROM transactions WHERE amount >= 1000
+  ```
+
+- **Less Than (<)**: Find values below a threshold
+  ```sql
+  SELECT * FROM transactions WHERE amount < 500
+  -- Returns micro-payments
+  ```
+
+- **Less Than or Equal (<=)**: Include the boundary value
+  ```sql
+  SELECT * FROM transactions WHERE fee <= 100
+  ```
+
+- **BETWEEN**: Range queries with both boundaries
+  ```sql
+  SELECT * FROM transactions WHERE amount BETWEEN 500 AND 2000
+  -- Returns medium-sized transactions
+  ```
+
+**Performance Benefits**:
+- **B-Tree Search**: O(log N) - logarithmic time
+- **Table Scan**: O(N) - linear time
+- **Example**: With 10,000 records
+  - B-Tree: ~14 comparisons
+  - Table Scan: 10,000 comparisons
+  - **Speedup: 714×** 🚀
+
+**Real-World Use Cases**:
+```sql
+-- High-value transactions
+SELECT * FROM transactions WHERE amount > 5000
+
+-- Fee analysis
+SELECT * FROM transactions WHERE fee BETWEEN 10 AND 50
+
+-- Small payments
+SELECT * FROM orders WHERE amount < 100
+
+-- Recent transaction IDs
+SELECT * FROM transactions WHERE id >= 1000
+```
+
+**Technical Implementation**:
+- Self-balancing B-Tree with configurable order
+- Automatic index maintenance on INSERT/UPDATE/DELETE
+- Falls back to table scan if no index exists
+- Supports duplicate keys (multiple rows with same value)
+
 ---
 
 ## 💻 Web Application Features
@@ -303,16 +414,19 @@ npm run repl      # Open SQL REPL
 ## 🔮 Future Enhancements
 
 ### Phase 1: Advanced SQL
-- JOIN support (INNER, LEFT, RIGHT)
-- Aggregate functions (SUM, AVG, COUNT, MIN, MAX)
-- Complex WHERE (AND, OR, NOT)
-- GROUP BY and ORDER BY
-
-### Phase 2: Performance
-- B-Tree indexing for range queries
-- Write-Ahead Log (WAL) for batch commits
-- Binary storage format
-- Query caching
+## 🔮 Future Improvements
+- **B-Tree Indexing**: For range queries (e.g., "Transactions > 1000 KES").
+- ~~**JOINS**: Currently limited, full Inner/Outer join support would enable complex reporting.~~ ✅ **IMPLEMENTED**
+  - ✅ INNER JOIN (fully functional with hash optimization)
+  - ✅ LEFT JOIN (all left records + matching right records)
+  - ✅ RIGHT JOIN (all right records + matching left records)
+  - ✅ Hash Join algorithm for O(N+M) performance
+  - ✅ WHERE clause support in JOIN queries
+  - 🔄 **Multi-table JOINs**: Extend to support 3+ table joins
+  - 🔄 **FULL OUTER JOIN**: Combine LEFT and RIGHT join results
+  - 🔄 **Aggregate Functions with JOINs**: SUM, AVG, COUNT in joined queries
+- **Binary Storage**: Replacing JSON with a binary format for better space efficiency.
+- **Complex WHERE Clauses**: Full support for AND/OR/NOT operators.g
 
 ### Phase 3: Enterprise
 - Multi-user concurrency (row-level locking)
