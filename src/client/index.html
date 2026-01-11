@@ -1,6 +1,6 @@
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="styles.css">
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
+
 <body>
     <div class="app-container">
         <!-- Sidebar -->
@@ -19,12 +20,13 @@
                 <div class="logo-icon">P</div>
                 <h2>PesaTrack</h2>
             </div>
-            
+
             <nav>
-                <a href="#" class="active"><i data-lucide="layout-dashboard"></i> Dashboard</a>
-                <a href="#"><i data-lucide="receipt"></i> Transactions</a>
-                <a href="#"><i data-lucide="wallet"></i> Payouts</a>
-                <a href="#"><i data-lucide="settings"></i> Settings</a>
+                <a href="#" class="nav-link active" data-page="dashboard"><i data-lucide="layout-dashboard"></i>
+                    Dashboard</a>
+                <a href="#" class="nav-link" data-page="transactions"><i data-lucide="receipt"></i> Transactions</a>
+                <a href="#" class="nav-link" data-page="payouts"><i data-lucide="wallet"></i> Payouts</a>
+                <a href="#" class="nav-link" data-page="settings"><i data-lucide="settings"></i> Settings</a>
             </nav>
 
             <div class="user-profile">
@@ -37,69 +39,289 @@
         </aside>
 
         <!-- Main Content -->
-        <main class="main-content">
-            <header>
-                <h1>Dashboard</h1>
-                <div class="actions">
-                     <button class="btn-refresh" id="refreshBtn"><i data-lucide="refresh-cw"></i> Sync</button>
-                     <button class="btn-primary" id="addTxBtn"><i data-lucide="plus"></i> New Transaction</button>
-                </div>
-            </header>
+        <main class="main-content" id="mainContent">
+            <!-- Dashboard Page -->
+            <div class="page-content active" id="page-dashboard">
+                <header>
+                    <h1>Dashboard</h1>
+                    <div class="actions">
+                        <button class="btn-refresh" id="refreshBtn"><i data-lucide="refresh-cw"></i> Sync</button>
+                        <button class="btn-primary" id="addTxBtn"><i data-lucide="plus"></i> New Transaction</button>
+                    </div>
+                </header>
 
-            <!-- Stats Cards -->
-            <div class="stats-grid">
-                <div class="card stat-card">
-                    <div class="stat-icon income"><i data-lucide="trending-up"></i></div>
-                    <div class="stat-info">
-                        <h3>Total Sales</h3>
-                        <p class="value" id="totalSales">KES 0.00</p>
+                <!-- Stats Cards -->
+                <div class="stats-grid">
+                    <div class="card stat-card">
+                        <div class="stat-icon income"><i data-lucide="trending-up"></i></div>
+                        <div class="stat-info">
+                            <h3>Total Sales</h3>
+                            <p class="value" id="totalSales">KES 0.00</p>
+                        </div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="stat-icon tx"><i data-lucide="activity"></i></div>
+                        <div class="stat-info">
+                            <h3>Transactions</h3>
+                            <p class="value" id="txCount">0</p>
+                        </div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="stat-icon credit"><i data-lucide="credit-card"></i></div>
+                        <div class="stat-info">
+                            <h3>Avg. Ticket</h3>
+                            <p class="value" id="avgTicket">KES 0.00</p>
+                        </div>
                     </div>
                 </div>
-                <div class="card stat-card">
-                    <div class="stat-icon tx"><i data-lucide="activity"></i></div>
-                    <div class="stat-info">
-                        <h3>Transactions</h3>
-                        <p class="value" id="txCount">0</p>
+
+                <!-- Transactions Table -->
+                <div class="card table-card">
+                    <div class="card-header">
+                        <h3>Recent Transactions</h3>
+                        <div class="filter">
+                            <span class="active">All</span>
+                            <span>Success</span>
+                            <span>Pending</span>
+                        </div>
                     </div>
-                </div>
-                <div class="card stat-card">
-                    <div class="stat-icon credit"><i data-lucide="credit-card"></i></div>
-                    <div class="stat-info">
-                        <h3>Avg. Ticket</h3>
-                        <p class="value" id="avgTicket">KES 0.00</p>
+                    <div class="table-responsive">
+                        <table id="txTable">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Merchant/Ref</th>
+                                    <th>Date</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="6" class="empty-state">Loading records...</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
 
-            <!-- Transactions Table -->
-            <div class="card table-card">
-                <div class="card-header">
-                    <h3>Recent Transactions</h3>
-                    <div class="filter">
-                        <span class="active">All</span>
-                        <span>Success</span>
-                        <span>Pending</span>
+            <!-- Transactions Page -->
+            <div class="page-content" id="page-transactions">
+                <header>
+                    <h1>All Transactions</h1>
+                    <div class="actions">
+                        <button class="btn-refresh" id="refreshTxBtn"><i data-lucide="refresh-cw"></i> Sync</button>
+                        <button class="btn-primary" id="addTxBtn2"><i data-lucide="plus"></i> New Transaction</button>
+                    </div>
+                </header>
+
+                <div class="card table-card">
+                    <div class="card-header">
+                        <h3>Transaction History</h3>
+                        <div class="filter" id="txFilter">
+                            <span class="active" data-filter="all">All</span>
+                            <span data-filter="Success">Success</span>
+                            <span data-filter="Pending">Pending</span>
+                            <span data-filter="Failed">Failed</span>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table id="txTableFull">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Merchant/Ref</th>
+                                    <th>Date</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="6" class="empty-state">Loading records...</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-                <div class="table-responsive">
-                    <table id="txTable">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Merchant/Ref</th>
-                                <th>Date</th>
-                                <th>Amount</th>
-                                <th>Status</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Populated by JS -->
-                            <tr>
-                                <td colspan="6" class="empty-state">Loading records...</td>
-                            </tr>
-                        </tbody>
-                    </table>
+            </div>
+
+            <!-- Payouts Page -->
+            <div class="page-content" id="page-payouts">
+                <header>
+                    <h1>Payouts</h1>
+                    <div class="actions">
+                        <button class="btn-primary" id="requestPayoutBtn"><i data-lucide="download"></i> Request
+                            Payout</button>
+                    </div>
+                </header>
+
+                <!-- Payout Stats -->
+                <div class="stats-grid">
+                    <div class="card stat-card">
+                        <div class="stat-icon success"><i data-lucide="check-circle"></i></div>
+                        <div class="stat-info">
+                            <h3>Available Balance</h3>
+                            <p class="value" id="availableBalance">KES 0.00</p>
+                        </div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="stat-icon pending"><i data-lucide="clock"></i></div>
+                        <div class="stat-info">
+                            <h3>Pending Payouts</h3>
+                            <p class="value" id="pendingPayouts">KES 0.00</p>
+                        </div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="stat-icon income"><i data-lucide="arrow-down-circle"></i></div>
+                        <div class="stat-info">
+                            <h3>Total Paid Out</h3>
+                            <p class="value" id="totalPaidOut">KES 0.00</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payout History -->
+                <div class="card table-card">
+                    <div class="card-header">
+                        <h3>Payout History</h3>
+                    </div>
+                    <div class="table-responsive">
+                        <table id="payoutsTable">
+                            <thead>
+                                <tr>
+                                    <th>Payout ID</th>
+                                    <th>Date Requested</th>
+                                    <th>Amount</th>
+                                    <th>Bank Account</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="5" class="empty-state">No payout history yet</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Page -->
+            <div class="page-content" id="page-settings">
+                <header>
+                    <h1>Settings</h1>
+                </header>
+
+                <div class="settings-grid">
+                    <!-- Business Info -->
+                    <div class="card settings-card">
+                        <h3><i data-lucide="building-2"></i> Business Information</h3>
+                        <form id="businessForm" class="settings-form">
+                            <div class="form-group">
+                                <label>Business Name</label>
+                                <input type="text" id="businessName" value="Kileleshwa Branch"
+                                    placeholder="Enter business name">
+                            </div>
+                            <div class="form-group">
+                                <label>Merchant ID</label>
+                                <input type="text" id="merchantId" value="4920" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>Contact Email</label>
+                                <input type="email" id="contactEmail" value="merchant@example.com"
+                                    placeholder="email@example.com">
+                            </div>
+                            <div class="form-group">
+                                <label>Phone Number</label>
+                                <input type="tel" id="phoneNumber" value="+254712345678" placeholder="+254...">
+                            </div>
+                            <button type="submit" class="btn-primary">Save Changes</button>
+                        </form>
+                    </div>
+
+                    <!-- Bank Details -->
+                    <div class="card settings-card">
+                        <h3><i data-lucide="landmark"></i> Bank Details</h3>
+                        <form id="bankForm" class="settings-form">
+                            <div class="form-group">
+                                <label>Bank Name</label>
+                                <select id="bankName">
+                                    <option>Equity Bank</option>
+                                    <option>KCB</option>
+                                    <option>Co-operative Bank</option>
+                                    <option>NCBA</option>
+                                    <option>Stanbic Bank</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Account Number</label>
+                                <input type="text" id="accountNumber" value="1234567890"
+                                    placeholder="Enter account number">
+                            </div>
+                            <div class="form-group">
+                                <label>Account Name</label>
+                                <input type="text" id="accountName" value="John Mwangi"
+                                    placeholder="Account holder name">
+                            </div>
+                            <button type="submit" class="btn-primary">Update Bank Info</button>
+                        </form>
+                    </div>
+
+                    <!-- Notification Preferences -->
+                    <div class="card settings-card">
+                        <h3><i data-lucide="bell"></i> Notifications</h3>
+                        <div class="settings-form">
+                            <div class="toggle-group">
+                                <label>
+                                    <input type="checkbox" id="emailNotif" checked>
+                                    <span>Email notifications for transactions</span>
+                                </label>
+                            </div>
+                            <div class="toggle-group">
+                                <label>
+                                    <input type="checkbox" id="smsNotif" checked>
+                                    <span>SMS alerts for payouts</span>
+                                </label>
+                            </div>
+                            <div class="toggle-group">
+                                <label>
+                                    <input type="checkbox" id="weeklyReport">
+                                    <span>Weekly performance reports</span>
+                                </label>
+                            </div>
+                            <button class="btn-primary">Save Preferences</button>
+                        </div>
+                    </div>
+
+                    <!-- Database Management -->
+                    <div class="card settings-card">
+                        <h3><i data-lucide="database"></i> Database Management</h3>
+                        <div class="settings-form">
+                            <p class="info-text">Manage your local PesaDB instance</p>
+                            <div class="db-stats">
+                                <div class="db-stat-item">
+                                    <span class="label">Total Records:</span>
+                                    <span class="value" id="dbRecordCount">0</span>
+                                </div>
+                                <div class="db-stat-item">
+                                    <span class="label">Database Size:</span>
+                                    <span class="value" id="dbSize">0 KB</span>
+                                </div>
+                                <div class="db-stat-item">
+                                    <span class="label">Last Sync:</span>
+                                    <span class="value" id="lastSync">Never</span>
+                                </div>
+                            </div>
+                            <div class="button-group">
+                                <button class="btn-refresh"><i data-lucide="database"></i> Backup Data</button>
+                                <button class="btn-danger"><i data-lucide="trash-2"></i> Clear All Data</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </main>
@@ -143,4 +365,5 @@
         lucide.createIcons();
     </script>
 </body>
+
 </html>
