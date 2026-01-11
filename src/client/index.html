@@ -32,9 +32,12 @@
             <div class="user-profile">
                 <div class="avatar">JM</div>
                 <div class="info">
-                    <p class="name">John Mwangi</p>
-                    <p class="role">Merchant ID: 4920</p>
+                    <p class="name" id="userName">John Mwangi</p>
+                    <p class="role" id="userMerchantId">Merchant ID: 4920</p>
                 </div>
+                <button class="logout-btn" id="logoutBtn" title="Logout">
+                    <i data-lucide="log-out"></i>
+                </button>
             </div>
         </aside>
 
@@ -112,10 +115,25 @@
                 <header>
                     <h1>All Transactions</h1>
                     <div class="actions">
+                        <button class="btn-refresh" id="exportCsvBtn"><i data-lucide="download"></i> Export CSV</button>
                         <button class="btn-refresh" id="refreshTxBtn"><i data-lucide="refresh-cw"></i> Sync</button>
                         <button class="btn-primary" id="addTxBtn2"><i data-lucide="plus"></i> New Transaction</button>
                     </div>
                 </header>
+
+                <!-- Search Bar -->
+                <div class="search-bar">
+                    <div class="search-input-group">
+                        <i data-lucide="search"></i>
+                        <input type="text" id="searchTx" placeholder="Search by ID, merchant, or amount...">
+                    </div>
+                    <div class="date-range">
+                        <input type="date" id="dateFrom" placeholder="From">
+                        <span>to</span>
+                        <input type="date" id="dateTo" placeholder="To">
+                        <button class="btn-refresh" id="clearFilters"><i data-lucide="x"></i> Clear</button>
+                    </div>
+                </div>
 
                 <div class="card table-card">
                     <div class="card-header">
@@ -360,9 +378,18 @@
         </div>
     </div>
 
+    <!-- Toast Notifications -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <script src="auth.js"></script>
     <script src="interaction.js"></script>
     <script>
         lucide.createIcons();
+
+        // Check if user is logged in
+        if (!isLoggedIn()) {
+            window.location.href = 'login.html';
+        }
     </script>
 </body>
 

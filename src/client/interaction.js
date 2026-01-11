@@ -15,6 +15,9 @@ const pages = document.querySelectorAll('.page-content');
 // State
 let transactions = [];
 let currentFilter = 'all';
+let searchQuery = '';
+let dateFrom = '';
+let dateTo = '';
 
 // ===== PAGE NAVIGATION =====
 navLinks.forEach(link => {
@@ -22,18 +25,14 @@ navLinks.forEach(link => {
         e.preventDefault();
         const targetPage = link.getAttribute('data-page');
 
-        // Update active nav
         navLinks.forEach(l => l.classList.remove('active'));
         link.classList.add('active');
 
-        // Show target page
         pages.forEach(page => page.classList.remove('active'));
         document.getElementById(`page-${targetPage}`).classList.add('active');
 
-        // Reinitialize icons for new page
         if (window.lucide) lucide.createIcons();
 
-        // Load page-specific data
         if (targetPage === 'transactions') {
             renderTransactionsFull();
         } else if (targetPage === 'payouts') {
@@ -54,6 +53,7 @@ async function fetchTransactions() {
         renderTransactionsFull();
     } catch (e) {
         console.error("Failed to fetch", e);
+        showToast('Failed to load transactions', 'error');
     }
 }
 
@@ -78,24 +78,27 @@ async function addTransaction(amount, status) {
         });
         fetchTransactions();
         toggleModal(false);
+        showToast(`Transaction ${id} recorded successfully!`, 'success');
     } catch (e) {
         console.error("Failed to add", e);
+        showToast('Failed to add transaction', 'error');
     }
 }
 
 async function deleteTransaction(id) {
-    if (!confirm("Are you sure?")) return;
+    if (!confirm("Are you sure you want to delete this transaction?")) return;
     try {
         await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
         fetchTransactions();
+        showToast('Transaction deleted', 'success');
     } catch (e) {
         console.error("Failed to delete", e);
+        showToast('Failed to delete transaction', 'error');
     }
 }
 
 // ===== DASHBOARD RENDERING =====
 function renderDashboard() {
-    // Stats
     const total = transactions.filter(t => t.status === 'Success').reduce((sum, t) => sum + t.amount, 0);
     const count = transactions.length;
     const avg = count > 0 ? (total / count) : 0;
@@ -104,7 +107,6 @@ function renderDashboard() {
     txCountEl.innerText = count;
     avgTicketEl.innerText = `KES ${Math.floor(avg).toLocaleString()}`;
 
-    // Table (last 5)
     txTableBody.innerHTML = '';
     const reversed = [...transactions].reverse().slice(0, 5);
 
@@ -141,10 +143,27 @@ function renderTransactionsFull() {
 
     txTableFullBody.innerHTML = '';
 
-    // Apply filter
-    let filtered = currentFilter === 'all'
-        ? transactions
-        : transactions.filter(t => t.status === currentFilter);
+    // Apply filters
+    let filtered = transactions.filter(t => {
+        // Status filter
+        if (currentFilter !== 'all' && t.status !== currentFilter) return false;
+
+        // Search filter
+        if (searchQuery) {
+            const query = searchQuery.toLowerCase();
+            if (!t.id.toLowerCase().includes(query) &&
+                !t.merchant.toLowerCase().includes(query) &&
+                !t.amount.toString().includes(query)) {
+                return false;
+            }
+        }
+
+        // Date range filter
+        if (dateFrom && t.timestamp < dateFrom) return false;
+        if (dateTo && t.timestamp > dateTo) return false;
+
+        return true;
+    });
 
     const reversed = [...filtered].reverse();
 
@@ -180,71 +199,135 @@ const txFilter = document.getElementById('txFilter');
 if (txFilter) {
     txFilter.addEventListener('click', (e) => {
         if (e.target.tagName === 'SPAN') {
-            // Update active filter
             txFilter.querySelectorAll('span').forEach(s => s.classList.remove('active'));
             e.target.classList.add('active');
-
-            // Update filter state
             currentFilter = e.target.getAttribute('data-filter');
             renderTransactionsFull();
         }
     });
 }
 
+// Search functionality
+const searchTx = document.getElementById('searchTx');
+if (searchTx) {
+    searchTx.addEventListener('input', (e) => {
+        searchQuery = e.target.value;
+        renderTransactionsFull();
+    });
+}
+
+// Date filters
+const dateFromInput = document.getElementById('dateFrom');
+const dateToInput = document.getElementById('dateTo');
+
+if (dateFromInput) {
+    dateFromInput.addEventListener('change', (e) => {
+        dateFrom = e.target.value;
+        renderTransactionsFull();
+    });
+}
+
+if (dateToInput) {
+    dateToInput.addEventListener('change', (e) => {
+        dateTo = e.target.value;
+        renderTransactionsFull();
+    });
+}
+
+// Clear filters
+const clearFilters = document.getElementById('clearFilters');
+if (clearFilters) {
+    clearFilters.addEventListener('click', () => {
+        searchQuery = '';
+        dateFrom = '';
+        dateTo = '';
+        if (searchTx) searchTx.value = '';
+        if (dateFromInput) dateFromInput.value = '';
+        if (dateToInput) dateToInput.value = '';
+        renderTransactionsFull();
+        showToast('Filters cleared', 'info');
+    });
+}
+
+// Export to CSV
+const exportCsvBtn = document.getElementById('exportCsvBtn');
+if (exportCsvBtn) {
+    exportCsvBtn.addEventListener('click', () => {
+        if (transactions.length === 0) {
+            showToast('No transactions to export', 'error');
+            return;
+        }
+
+        // Create CSV content
+        const headers = ['ID', 'Merchant', 'Date', 'Amount', 'Status'];
+        const csvRows = [headers.join(',')];
+
+        transactions.forEach(tx => {
+            const row = [
+                tx.id,
+                `"${tx.merchant}"`,
+                tx.timestamp,
+                tx.amount,
+                tx.status
+            ];
+            csvRows.push(row.join(','));
+        });
+
+        const csvContent = csvRows.join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `pesatrack_transactions_${new Date().toISOString().split('T')[0]}.csv`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+
+        showToast(`Exported ${transactions.length} transactions`, 'success');
+    });
+}
+
 // ===== PAYOUTS PAGE =====
 function loadPayouts() {
-    // Calculate payout stats from successful transactions
     const successfulTx = transactions.filter(t => t.status === 'Success');
     const totalSuccess = successfulTx.reduce((sum, t) => sum + t.amount, 0);
-
-    // Simulate 10% platform fee
     const available = Math.floor(totalSuccess * 0.9);
 
     document.getElementById('availableBalance').innerText = `KES ${available.toLocaleString()}`;
     document.getElementById('pendingPayouts').innerText = 'KES 0.00';
     document.getElementById('totalPaidOut').innerText = 'KES 0.00';
 
-    // Mock payout history
     const payoutsTableBody = document.querySelector('#payoutsTable tbody');
     if (payoutsTableBody) {
         payoutsTableBody.innerHTML = '<tr><td colspan="5" class="empty-state">No payout history yet. Request your first payout!</td></tr>';
     }
 }
 
-// Payout Request
 const requestPayoutBtn = document.getElementById('requestPayoutBtn');
 if (requestPayoutBtn) {
     requestPayoutBtn.addEventListener('click', () => {
-        alert('Payout request feature coming soon! This would integrate with Pesapal\'s payout API.');
+        showToast('Payout request feature coming soon! This would integrate with Pesapal\'s payout API.', 'info');
     });
 }
 
 // ===== SETTINGS PAGE =====
 function loadSettings() {
-    // Load DB stats
     const dbRecordCount = document.getElementById('dbRecordCount');
     const dbSize = document.getElementById('dbSize');
     const lastSync = document.getElementById('lastSync');
 
-    if (dbRecordCount) {
-        dbRecordCount.innerText = transactions.length;
-    }
+    if (dbRecordCount) dbRecordCount.innerText = transactions.length;
     if (dbSize) {
-        // Estimate size (very rough)
         const sizeKB = Math.ceil(JSON.stringify(transactions).length / 1024);
         dbSize.innerText = `${sizeKB} KB`;
     }
-    if (lastSync) {
-        lastSync.innerText = new Date().toLocaleString();
-    }
+    if (lastSync) lastSync.innerText = new Date().toLocaleString();
 }
 
-// Settings Forms
 const businessForm = document.getElementById('businessForm');
 if (businessForm) {
     businessForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        alert('Business information updated successfully!');
+        showToast('Business information updated successfully!', 'success');
     });
 }
 
@@ -252,7 +335,7 @@ const bankForm = document.getElementById('bankForm');
 if (bankForm) {
     bankForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        alert('Bank details updated successfully!');
+        showToast('Bank details updated successfully!', 'success');
     });
 }
 
@@ -276,26 +359,20 @@ function toggleModal(show) {
 if (refreshBtn) {
     refreshBtn.addEventListener('click', () => {
         fetchTransactions();
+        showToast('Data synced', 'success');
     });
 }
 
 if (refreshTxBtn) {
     refreshTxBtn.addEventListener('click', () => {
         fetchTransactions();
+        showToast('Data synced', 'success');
     });
 }
 
-if (addTxBtn) {
-    addTxBtn.addEventListener('click', () => toggleModal(true));
-}
-
-if (addTxBtn2) {
-    addTxBtn2.addEventListener('click', () => toggleModal(true));
-}
-
-if (closeModal) {
-    closeModal.addEventListener('click', () => toggleModal(false));
-}
+if (addTxBtn) addTxBtn.addEventListener('click', () => toggleModal(true));
+if (addTxBtn2) addTxBtn2.addEventListener('click', () => toggleModal(true));
+if (closeModal) closeModal.addEventListener('click', () => toggleModal(false));
 
 if (txModal) {
     txModal.addEventListener('click', (e) => {
@@ -312,7 +389,6 @@ if (txForm) {
     });
 }
 
-// Expose to window
 window.deleteTransaction = deleteTransaction;
 
 // ===== INITIALIZATION =====
