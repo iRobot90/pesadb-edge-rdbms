@@ -48,5 +48,5 @@ temp/
 coverage/
 .nyc_output/
 
-# Optional: Uncomment if you want to ignore the database file
+# the database file
 # data/pesadb.json
