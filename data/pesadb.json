@@ -1,59 +1,19 @@
 {
   "tables": [
     {
-      "name": "products",
-      "columns": [
-        {
-          "name": "id",
-          "type": "number",
-          "isPrimaryKey": true,
-          "isUnique": false,
-          "isNullable": false
-        },
-        {
-          "name": "name",
-          "type": "string",
-          "isPrimaryKey": false,
-          "isUnique": false,
-          "isNullable": false
-        },
-        {
-          "name": "price",
-          "type": "number",
-          "isPrimaryKey": false,
-          "isUnique": false,
-          "isNullable": false
-        },
-        {
-          "name": "stock",
-          "type": "number",
-          "isPrimaryKey": false,
-          "isUnique": false,
-          "isNullable": false
-        }
-      ],
-      "rows": [
-        {
-          "id": 1,
-          "name": "Laptop",
-          "price": 1200,
-          "stock": 10
-        },
-        {
-          "id": 2,
-          "name": "Mouse",
-          "price": 20,
-          "stock": 50
-        }
-      ]
-    },
-    {
       "name": "transactions",
       "columns": [
         {
           "name": "id",
-          "type": "string",
+          "type": "number",
           "isPrimaryKey": true,
+          "isUnique": false,
+          "isNullable": false
+        },
+        {
+          "name": "merchant_id",
+          "type": "number",
+          "isPrimaryKey": false,
           "isUnique": false,
           "isNullable": false
         },
@@ -65,8 +25,8 @@
           "isNullable": false
         },
         {
-          "name": "merchant",
-          "type": "string",
+          "name": "fee",
+          "type": "number",
           "isPrimaryKey": false,
           "isUnique": false,
           "isNullable": false
@@ -77,120 +37,78 @@
           "isPrimaryKey": false,
           "isUnique": false,
           "isNullable": false
-        },
-        {
-          "name": "timestamp",
-          "type": "string",
-          "isPrimaryKey": false,
-          "isUnique": false,
-          "isNullable": false
         }
       ],
       "rows": [
         {
-          "id": "TX-NX8XZKBGI",
-          "amount": 2049,
-          "merchant": "CBD Branch",
-          "status": "Success",
-          "timestamp": "2026-01-11"
+          "id": 1,
+          "merchant_id": 4920,
+          "amount": 500,
+          "fee": 25,
+          "status": "completed"
         },
         {
-          "id": "TX-I52T6ZNEQ",
-          "amount": 2606,
-          "merchant": "CBD Branch",
-          "status": "Failed",
-          "timestamp": "2026-01-09"
+          "id": 2,
+          "merchant_id": 4920,
+          "amount": 1500,
+          "fee": 75,
+          "status": "completed"
         },
         {
-          "id": "TX-57Z2B2VDK",
-          "amount": 5004,
-          "merchant": "Kileleshwa Branch",
-          "status": "Success",
-          "timestamp": "2026-01-03"
+          "id": 3,
+          "merchant_id": 4921,
+          "amount": 250,
+          "fee": 12.5,
+          "status": "pending"
         },
         {
-          "id": "TX-ORJLLOXB5",
-          "amount": 3181,
-          "merchant": "CBD Branch",
-          "status": "Pending",
-          "timestamp": "2026-01-11"
+          "id": 4,
+          "merchant_id": 4920,
+          "amount": 3000,
+          "fee": 150,
+          "status": "completed"
         },
         {
-          "id": "TX-H0CT1CDJH",
-          "amount": 3853,
-          "merchant": "Mombasa Road",
-          "status": "Success",
-          "timestamp": "2026-01-11"
+          "id": 5,
+          "merchant_id": 4922,
+          "amount": 750,
+          "fee": 37.5,
+          "status": "failed"
         },
         {
-          "id": "TX-IMVSK0Q1H",
-          "amount": 1372,
-          "merchant": "Westlands HQ",
-          "status": "Failed",
-          "timestamp": "2026-01-10"
+          "id": 6,
+          "merchant_id": 4920,
+          "amount": 2000,
+          "fee": 100,
+          "status": "completed"
         },
         {
-          "id": "TX-XCT7I5DR2",
-          "amount": 961,
-          "merchant": "CBD Branch",
-          "status": "Pending",
-          "timestamp": "2026-01-03"
+          "id": 7,
+          "merchant_id": 4921,
+          "amount": 1200,
+          "fee": 60,
+          "status": "completed"
         },
         {
-          "id": "TX-9IGNSO3QQ",
-          "amount": 1362,
-          "merchant": "Westlands HQ",
-          "status": "Success",
-          "timestamp": "2026-01-03"
+          "id": 8,
+          "merchant_id": 4922,
+          "amount": 450,
+          "fee": 22.5,
+          "status": "completed"
         },
         {
-          "id": "TX-EK0GPXBL2",
-          "amount": 2928,
-          "merchant": "Westlands HQ",
-          "status": "Success",
-          "timestamp": "2026-01-11"
+          "id": 9,
+          "merchant_id": 4920,
+          "amount": 5000,
+          "fee": 250,
+          "status": "completed"
         },
         {
-          "id": "TX-PCGMWLMJX",
-          "amount": 4088,
-          "merchant": "CBD Branch",
-          "status": "Pending",
-          "timestamp": "2026-01-11"
-        },
-        {
-          "id": "TX-26NBWA8WX",
-          "amount": 3652,
-          "merchant": "Westlands HQ",
-          "status": "Pending",
-          "timestamp": "2026-01-04"
-        },
-        {
-          "id": "TX-554MMW4WL",
-          "amount": 3201,
-          "merchant": "CBD Branch",
-          "status": "Failed",
-          "timestamp": "2026-01-09"
-        },
-        {
-          "id": "TX-6OAML6UU9",
-          "amount": 4477,
-          "merchant": "Kileleshwa Branch",
-          "status": "Success",
-          "timestamp": "2026-01-10"
-        },
-        {
-          "id": "TX-IOJ9K4OTZ",
-          "amount": 1123,
-          "merchant": "Westlands HQ",
-          "status": "Failed",
-          "timestamp": "2026-01-07"
-        },
-        {
-          "id": "TX-P74FZTPM1",
-          "amount": 4565,
-          "merchant": "Kileleshwa Branch",
-          "status": "Failed",
-          "timestamp": "2026-01-03"
+          "id": 10,
+          "merchant_id": 4921,
+          "amount": 100,
+          "fee": 5,
+          "status": "pending"
         }
       ]
     }
