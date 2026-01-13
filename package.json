@@ -1,8 +1,8 @@
 {
   "name": "pesapal-challenge",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "PesaTrack Merchant Transaction Dashboard & PesaDB Custom RDBMS",
+  "main": "dist/server/index.js",
   "scripts": {
     "start": "ts-node src/server/index.ts",
     "repl": "ts-node src/repl/index.ts",
@@ -11,7 +11,10 @@
     "test:join": "ts-node test_join.ts",
     "test:join-enhanced": "ts-node test_enhanced_join.ts",
     "test:btree": "ts-node test_btree.ts",
-    "test:db": "ts-node test_db.ts"
+    "test:db": "ts-node test_db.ts",
+    "test": "mocha -r ts-node/register --exit 'test/**/*.ts'",
+    "test:watch": "mocha -r ts-node/register --watch 'test/**/*.ts'",
+    "coverage": "nyc npm test"
   },
   "keywords": [],
   "author": "",
@@ -19,15 +22,28 @@
   "type": "commonjs",
   "devDependencies": {
     "@types/body-parser": "^1.19.6",
+    "@types/chai": "^5.2.3",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
+    "@types/mocha": "^10.0.10",
+    "@types/morgan": "^1.9.10",
     "@types/node": "^25.0.6",
+    "@types/supertest": "^6.0.3",
+    "chai": "^6.2.2",
+    "mocha": "^11.7.5",
+    "nyc": "^17.1.0",
+    "supertest": "^7.2.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
   },
   "dependencies": {
     "body-parser": "^2.2.2",
     "cors": "^2.8.5",
-    "express": "^5.2.1"
+    "dotenv": "^16.1.4",
+    "express": "^5.2.1",
+    "express-rate-limit": "^7.0.0",
+    "express-validator": "^7.0.1",
+    "helmet": "^7.0.0",
+    "morgan": "^1.10.1"
   }
 }

@@ -33,6 +33,26 @@ try {
         parser.execute(query);
     }
     console.log("Seeding complete. 15 records added.");
+
+    // Seed Demo API Key
+    const fs = require('fs');
+    const path = require('path');
+    const crypto = require('crypto');
+
+    const keyFile = path.join(__dirname, 'data', 'api_keys.json');
+    const demoToken = 'demo-key-123';
+    const hashed = crypto.createHmac('sha256', 'pesadb_secret_salt').update(demoToken).digest('hex');
+
+    const demoKey = {
+        id: 'demo-id',
+        hashed: hashed,
+        role: 'admin',
+        createdAt: new Date().toISOString()
+    };
+
+    fs.writeFileSync(keyFile, JSON.stringify({ keys: [demoKey] }, null, 2));
+    console.log("Seeded demo API key: " + demoToken);
+
 } catch (e) {
     console.error(e);
 }

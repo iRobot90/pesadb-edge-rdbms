@@ -1,6 +1,16 @@
 
 const API_URL = 'http://localhost:3000/api/transactions';
 
+// Read API key from localStorage for demo usage. In production use a secure auth flow.
+const API_KEY = localStorage.getItem('pesadb_api_key') || '';
+if (!API_KEY) console.warn('No API key found in localStorage (key: pesadb_api_key). Set it for authenticated API calls.');
+
+function authHeaders() {
+    const h = {};
+    if (API_KEY) h['x-api-key'] = API_KEY;
+    return h;
+}
+
 // Elements
 const txTableBody = document.querySelector('#txTable tbody');
 const txTableFullBody = document.querySelector('#txTableFull tbody');
@@ -46,7 +56,7 @@ navLinks.forEach(link => {
 // ===== API CLIENT =====
 async function fetchTransactions() {
     try {
-        const res = await fetch(API_URL);
+    const res = await fetch(API_URL, { headers: authHeaders() });
         const data = await res.json();
         transactions = data;
         renderDashboard();
@@ -73,7 +83,7 @@ async function addTransaction(amount, status) {
     try {
         await fetch(API_URL, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: Object.assign({ 'Content-Type': 'application/json' }, authHeaders()),
             body: JSON.stringify(payload)
         });
         fetchTransactions();
@@ -88,7 +98,7 @@ async function addTransaction(amount, status) {
 async function deleteTransaction(id) {
     if (!confirm("Are you sure you want to delete this transaction?")) return;
     try {
-        await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+    await fetch(`${API_URL}/${id}`, { method: 'DELETE', headers: authHeaders() });
         fetchTransactions();
         showToast('Transaction deleted', 'success');
     } catch (e) {

@@ -16,6 +16,8 @@ function login(merchantId, pin) {
         };
 
         localStorage.setItem('pesatrack_user', JSON.stringify(userData));
+        // Set demo API key for instant access
+        localStorage.setItem('pesadb_api_key', 'demo-key-123');
         return true;
     }
     return false;
@@ -23,6 +25,7 @@ function login(merchantId, pin) {
 
 function logout() {
     localStorage.removeItem('pesatrack_user');
+    localStorage.removeItem('pesadb_api_key');
     window.location.href = 'login.html';
 }
 

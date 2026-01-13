@@ -5,15 +5,8 @@
       "columns": [
         {
           "name": "id",
-          "type": "number",
+          "type": "string",
           "isPrimaryKey": true,
-          "isUnique": false,
-          "isNullable": false
-        },
-        {
-          "name": "merchant_id",
-          "type": "number",
-          "isPrimaryKey": false,
           "isUnique": false,
           "isNullable": false
         },
@@ -25,8 +18,8 @@
           "isNullable": false
         },
         {
-          "name": "fee",
-          "type": "number",
+          "name": "merchant",
+          "type": "string",
           "isPrimaryKey": false,
           "isUnique": false,
           "isNullable": false
@@ -37,78 +30,120 @@
           "isPrimaryKey": false,
           "isUnique": false,
           "isNullable": false
+        },
+        {
+          "name": "timestamp",
+          "type": "string",
+          "isPrimaryKey": false,
+          "isUnique": false,
+          "isNullable": false
         }
       ],
       "rows": [
         {
-          "id": 1,
-          "merchant_id": 4920,
-          "amount": 500,
-          "fee": 25,
-          "status": "completed"
+          "id": "TX-2MWTPM4RN",
+          "amount": 4510,
+          "merchant": "CBD Branch",
+          "status": "Pending",
+          "timestamp": "2026-01-13"
         },
         {
-          "id": 2,
-          "merchant_id": 4920,
-          "amount": 1500,
-          "fee": 75,
-          "status": "completed"
+          "id": "TX-FGO6OU37P",
+          "amount": 2053,
+          "merchant": "CBD Branch",
+          "status": "Pending",
+          "timestamp": "2026-01-08"
         },
         {
-          "id": 3,
-          "merchant_id": 4921,
-          "amount": 250,
-          "fee": 12.5,
-          "status": "pending"
+          "id": "TX-K805OAIDK",
+          "amount": 3552,
+          "merchant": "Kileleshwa Branch",
+          "status": "Success",
+          "timestamp": "2026-01-07"
         },
         {
-          "id": 4,
-          "merchant_id": 4920,
-          "amount": 3000,
-          "fee": 150,
-          "status": "completed"
+          "id": "TX-XGT0XJWR0",
+          "amount": 210,
+          "merchant": "Westlands HQ",
+          "status": "Failed",
+          "timestamp": "2026-01-12"
         },
         {
-          "id": 5,
-          "merchant_id": 4922,
-          "amount": 750,
-          "fee": 37.5,
-          "status": "failed"
+          "id": "TX-KU7QVV9RR",
+          "amount": 3858,
+          "merchant": "Kileleshwa Branch",
+          "status": "Success",
+          "timestamp": "2026-01-11"
         },
         {
-          "id": 6,
-          "merchant_id": 4920,
-          "amount": 2000,
-          "fee": 100,
-          "status": "completed"
+          "id": "TX-SAKSLD77D",
+          "amount": 3011,
+          "merchant": "Kileleshwa Branch",
+          "status": "Success",
+          "timestamp": "2026-01-07"
         },
         {
-          "id": 7,
-          "merchant_id": 4921,
-          "amount": 1200,
-          "fee": 60,
-          "status": "completed"
+          "id": "TX-PQWM47HP8",
+          "amount": 3359,
+          "merchant": "Kileleshwa Branch",
+          "status": "Success",
+          "timestamp": "2026-01-06"
         },
         {
-          "id": 8,
-          "merchant_id": 4922,
-          "amount": 450,
-          "fee": 22.5,
-          "status": "completed"
+          "id": "TX-MSS3859GR",
+          "amount": 5025,
+          "merchant": "Mombasa Road",
+          "status": "Success",
+          "timestamp": "2026-01-12"
         },
         {
-          "id": 9,
-          "merchant_id": 4920,
-          "amount": 5000,
-          "fee": 250,
-          "status": "completed"
+          "id": "TX-NDZBPC5R5",
+          "amount": 2485,
+          "merchant": "CBD Branch",
+          "status": "Pending",
+          "timestamp": "2026-01-10"
         },
         {
-          "id": 10,
-          "merchant_id": 4921,
-          "amount": 100,
-          "fee": 5,
-          "status": "pending"
+          "id": "TX-OKMBXYX8H",
+          "amount": 2604,
+          "merchant": "CBD Branch",
+          "status": "Success",
+          "timestamp": "2026-01-06"
+        },
+        {
+          "id": "TX-7DUWTQ4PL",
+          "amount": 3437,
+          "merchant": "Westlands HQ",
+          "status": "Success",
+          "timestamp": "2026-01-12"
+        },
+        {
+          "id": "TX-B7IHP0J9J",
+          "amount": 2487,
+          "merchant": "Mombasa Road",
+          "status": "Success",
+          "timestamp": "2026-01-07"
+        },
+        {
+          "id": "TX-P0IZ7E8I3",
+          "amount": 559,
+          "merchant": "CBD Branch",
+          "status": "Pending",
+          "timestamp": "2026-01-11"
+        },
+        {
+          "id": "TX-F76TVVCBS",
+          "amount": 1385,
+          "merchant": "Westlands HQ",
+          "status": "Success",
+          "timestamp": "2026-01-06"
+        },
+        {
+          "id": "TX-H2DYEZBO2",
+          "amount": 389,
+          "merchant": "Mombasa Road",
+          "status": "Success",
+          "timestamp": "2026-01-11"
         }
       ]
     }

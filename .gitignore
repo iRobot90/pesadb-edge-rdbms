@@ -49,4 +49,12 @@ coverage/
 .nyc_output/
 
 # the database file
-# data/pesadb.json
+data/pesadb.json
+data/api_keys.json
+
+# Ignore Compiled JS files in root and test directories (keep strictly source files)
+/*.js
+test/**/*.js
+!jest.config.js
+!.eslintrc.js
+!rollup.config.js
