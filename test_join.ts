@@ -62,8 +62,8 @@ try {
     );
     console.table(aliasJoin);
 
-    console.log("\n✅ JOIN functionality working perfectly!");
-    console.log("\n📊 Summary:");
+    console.log("\n[OK] JOIN functionality working perfectly!");
+    console.log("\nSummary:");
     console.log("  - Created 2 related tables");
     console.log("  - Inserted 3 customers and 4 orders");
     console.log("  - Performed INNER JOIN across tables");
@@ -71,5 +71,5 @@ try {
     console.log("  - Column projection working");
 
 } catch (e) {
-    console.error("\n❌ Error:", e);
+    console.error("\n[ERROR]:", e);
 }
